@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  VPCStack:
+    Type: 'AWS::CloudFormation::Stack'
+    DeletionPolicy: Delete
+    Properties:
+      TemplateURL: https://serverless-api-example-cloudformation.s3.amazonaws.com/vpc/vpc.yml
+      TimeoutInMinutes: '60'
+  IAMStack:
+    Type: 'AWS::CloudFormation::Stack'
+    DeletionPolicy: Delete
+    Properties:
+      TemplateURL: https://serverless-api-example-cloudformation.s3.amazonaws.com/iam/iam.yml
+      TimeoutInMinutes: '60'
+  LambdaStack:
+    DependsOn:
+      - VPCStack
+      - IAMStack
+    Type: 'AWS::CloudFormation::Stack'
+    DeletionPolicy: Delete
+    Properties:
+      TemplateURL: https://serverless-api-example-cloudformation.s3.amazonaws.com/lambda/lambda.yml
+      TimeoutInMinutes: '60'

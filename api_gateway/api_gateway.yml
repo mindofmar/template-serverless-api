@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: COCM API Resources
+Resources:
+  
+  APIGateway:
+    Type: AWS::ApiGateway::RestApi
+    Properties: 
+      # ApiKeySourceType: String
+      # BinaryMediaTypes: 
+      #   - String
+      # Body: Json
+      # BodyS3Location: 
+      #   S3Location
+      # CloneFrom: String
+      Description: The Client API for Clash of Clans Manager
+      EndpointConfiguration: 
+        Types: 
+          - EDGE
+        # VpcEndpointIds: use this if PRIVATE
+        #   - String      
+      # FailOnWarnings: Boolean
+      # MinimumCompressionSize: Integer
+      Name: COCM API
+      # Parameters: 
+      #   Key : Value
+      # Policy: Json
+      # Tags: 
+      #   - Tag
+
+  APIGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - APIGateway
+    Properties:
+      # DeploymentCanarySettings: 
+      #   DeploymentCanarySettings
+      # Description: String
+      RestApiId: !Ref APIGateway
+      # StageDescription: 
+      #   StageDescription
+      StageName: COCM API
+
+  GetPlayerData:
+    Type: AWS::ApiGateway::Method
+    Properties: 
+      # ApiKeyRequired: Boolean
+      # AuthorizationScopes: 
+      #   - String
+      AuthorizationType: NONE
+      # AuthorizerId: String
+      HttpMethod: GET
+      Integration: 
+        # IntegrationHttpMethod: "POST"
+        # Type: "AWS_PROXY"
+        # Uri: !Sub
+        #   - "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations"
+        #   - lambdaArn: !GetAtt "lambdaFunction.Arn"
+        IntegrationHttpMethod: "POST"
+        Type: "AWS_PROXY"
+        Uri: !Sub
+          - "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations"
+          - lambdaArn: !ImportValue CCOM-GetPlayerData-Lambda
+      # MethodResponses: 
+      #   - MethodResponse
+      # OperationName: Get Player Data
+      # RequestModels: 
+      #   Key : Value
+      # RequestParameters: 
+      #   Key : Value
+      # RequestValidatorId: String
+      ResourceId: !GetAtt APIGateway.RootResourceId
+      RestApiId: !Ref APIGateway
+
+Outputs:

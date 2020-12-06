@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: SAPIE Lambda Resources
+Resources:
+  
+  GetSecret:
+    Type: AWS::Lambda::Function
+    Properties: 
+      Code: 
+        S3Bucket: serverless-api-example-cloudformation
+        S3Key: lambda/get_secret.zip
+      Description: Gets the CLash of Clans API Secret
+      FunctionName: SAPIE-Get-COC-Secret
+      Handler: !Join
+        - ''
+        - - get_secret
+          - .lambda_handler
+      Role: !ImportValue SAPIE-IAM-Lambda
+      Runtime: python3.7
+      # Tags: 
+      #   - Tag
+      Timeout: '30'
+      VpcConfig:
+        SecurityGroupIds:
+          - !ImportValue SAPIE-VPC-SG
+        SubnetIds:
+          - !ImportValue SAPIE-VPC-PrivateSubnet1
+          - !ImportValue SAPIE-VPC-PrivateSubnet2
+
+  UpdateMembers:
+    Type: AWS::Lambda::Function
+    Properties: 
+      Code: 
+        S3Bucket: serverless-api-example-cloudformation
+        S3Key: lambda/update_members.zip
+      Description: Puts The Members of a Clash of Clans Clan into S3
+      FunctionName: ASPIE-Update-COC-Members
+      Handler: !Join
+        - ''
+        - - update_members
+          - .lambda_handler
+      Role: !ImportValue SAPIE-IAM-Lambda
+      Runtime: python3.7
+      # Tags: 
+      #   - Tag
+      Timeout: '30'
+      VpcConfig:
+        SecurityGroupIds:
+          - !ImportValue SAPIE-VPC-SG
+        SubnetIds:
+          - !ImportValue SAPIE-VPC-PrivateSubnet1
+          - !ImportValue SAPIE-VPC-PrivateSubnet2
+      
+
+# Outputs:
+#   UpdateClan:
+#     Description: LambdaARN
+#     Value: !GetAtt
+#       - UpdateClan
+#       - Arn
+#     Export:
+#       # Name: !Sub '${AWS::StackName}-LambdaARN'
+#       Name: SAPIE-Lambda-Update-Clan

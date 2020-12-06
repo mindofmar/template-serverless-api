@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: SAPIE IAM Resources
+Resources:
+  
+  LambdaExecution:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: SAPIE-Log-Access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                - 'logs:CreateLogGroup'
+                - 'logs:CreateLogStream'
+                - 'logs:PutLogEvents'
+                Resource: 'arn:aws:logs:*:*:*'
+        - PolicyName: SAPIE-Lambda-Secret-Access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'secretsmanager:Describe*'
+                  - 'secretsmanager:Get*'
+                  - 'secretsmanager:List*'
+                Resource:
+                  - arn:aws:secretsmanager:us-east-1:356288265445:secret:SAPIE-COC-API-Key-GbOC13
+        - PolicyName: SAPIE-EC2-Access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ec2:DescribeNetworkInterfaces'
+                  - 'ec2:CreateNetworkInterface'
+                  - 'ec2:DeleteNetworkInterface'
+                  - 'ec2:DescribeInstances'
+                  - 'ec2:AttachNetworkInterface'
+                Resource: '*'
+        - PolicyName: SAPIE-JSON-Bucke-Write
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:ListBucket'
+                  - 's3:GetObject'
+                  - 's3:PutObject'
+                Resource:
+                  - 'arn:aws:s3:::clash-of-clans-manager-json'
+                  - 'arn:aws:s3:::clash-of-clans-manager-json/*'
+        - PolicyName: SAPIE-Lambda-Lambda-Access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'lambda:InvokeFunction'
+                Resource:
+                  - '*'
+      Tags:
+        - Key: 'Name'
+          Value: 'SAPIE-Lambda-Execution'
+    
+  CloudformationExecution:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - cloudformation.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'cloudformation:*'
+                Resource: '*'
+      Tags:
+      - Key: 'Name'
+        Value: 'SAPIE-CloudFormation-Execution'
+
+Outputs:
+  LambdaExecution:
+    Description: SAPIE Lambda IAM Role
+    Value: !GetAtt
+      - LambdaExecution
+      - Arn
+    Export:
+      Name: SAPIE-IAM-Lambda
