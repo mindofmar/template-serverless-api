@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: COCM API Resources
+Description: SAPIE API Resources
 Resources:
   
   APIGateway:
@@ -20,7 +20,7 @@ Resources:
         #   - String      
       # FailOnWarnings: Boolean
       # MinimumCompressionSize: Integer
-      Name: COCM API
+      Name: SAPIE API
       # Parameters: 
       #   Key : Value
       # Policy: Json
@@ -38,7 +38,7 @@ Resources:
       RestApiId: !Ref APIGateway
       # StageDescription: 
       #   StageDescription
-      StageName: COCM API
+      StageName: SAPIE API
 
   GetPlayerData:
     Type: AWS::ApiGateway::Method
